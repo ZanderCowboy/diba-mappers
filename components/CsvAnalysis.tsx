@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const MODEL = "gemini-2.5-flash";
 const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
 // Read from environment variables
-const GEMINI_API_KEY = (process.env.VITE_GEMINI_API_KEY as string) || "";
+const GEMINI_API_KEY = ((import.meta as any).env?.VITE_GEMINI_API_KEY || "" ||         (process.env.API_KEY as string | undefined) ||
+(process.env.GEMINI_API_KEY as string | undefined));
 
 const GUARDRAIL = `
 You are a strict CSV analyst. Use ONLY the attached CSV data.
@@ -177,15 +178,108 @@ export const CsvAnalysis: React.FC = () => {
     }
   }
 
-  const pretty = useMemo(() => {
-    try {
-      return typeof result === "string"
-        ? result
-        : JSON.stringify(result, null, 2);
-    } catch {
-      return String(result);
+  function formatNumberMaybe(value: any) {
+    if (typeof value === "number") return value.toLocaleString();
+    const asNum = Number(value);
+    if (!Number.isNaN(asNum) && value !== "") return asNum.toLocaleString();
+    return String(value);
+  }
+
+  function formatRand(value: any) {
+    const formatted = formatNumberMaybe(value);
+    // Only prefix if it actually formatted as number-like
+    if (/^\d{1,3}(,\d{3})*(\.\d+)?$/.test(formatted)) return `R${formatted}`;
+    return formatted;
+  }
+
+  function renderKeyValueLine(obj: Record<string, any>) {
+    // Domain-specific phrasing for common SOE rows
+    const hasSOE = obj["SOE name"]; 
+    const overspend = obj["overspending_amount"] ?? obj["Overspending amount"] ?? obj["overspending amount"];
+    if (hasSOE && overspend != null) {
+      return `${obj["SOE name"]} overspent by ${formatRand(overspend)}`;
     }
-  }, [result]);
+
+    const entries = Object.entries(obj)
+      .filter(([k, v]) => v !== null && v !== undefined && v !== "")
+      .map(([k, v]) => `${k}: ${formatNumberMaybe(v)}`);
+    return entries.join(" · ");
+  }
+
+  function renderFriendly(answer: any): React.ReactNode {
+    if (answer == null) return null;
+
+    // Strings or numbers
+    if (typeof answer === "string" || typeof answer === "number") {
+      return <p className="text-blue-100">{String(answer)}</p>;
+    }
+
+    // Arrays of primitives or objects
+    if (Array.isArray(answer)) {
+      return (
+        <ul className="list-disc pl-5 space-y-1 text-blue-100">
+          {answer.map((item, idx) => (
+            <li key={idx} className="break-words">
+              {typeof item === "object" && item !== null
+                ? renderKeyValueLine(item as Record<string, any>)
+                : String(item)}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    // Objects – try to detect grouping by quarter or other keys
+    if (typeof answer === "object") {
+      const keys = Object.keys(answer as Record<string, any>);
+      const looksGrouped = keys.some((k) => /Q\d|\d{4}\//.test(k));
+      if (looksGrouped) {
+        return (
+          <div className="space-y-4">
+            {keys.map((groupKey) => {
+              const groupVal: any = (answer as any)[groupKey];
+              return (
+                <div key={groupKey}>
+                  <div className="text-white font-semibold mb-1">{groupKey}</div>
+                  {Array.isArray(groupVal) ? (
+                    <ul className="list-disc pl-5 space-y-1 text-blue-100">
+                      {groupVal.map((row: any, idx: number) => (
+                        <li key={idx} className="break-words">
+                          {typeof row === "object" && row !== null
+                            ? renderKeyValueLine(row)
+                            : String(row)}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-blue-100">{String(groupVal)}</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        );
+      }
+
+      // Generic object rendering
+      return (
+        <div className="space-y-2">
+          {keys.map((k) => (
+            <div key={k}>
+              <div className="text-white font-semibold">{k}</div>
+              <div className="text-blue-100">
+                {typeof (answer as any)[k] === "object"
+                  ? renderFriendly((answer as any)[k])
+                  : String((answer as any)[k])}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return <pre className="text-blue-200 text-sm whitespace-pre-wrap">{String(answer)}</pre>;
+  }
 
   return (
     <div className="bg-[#1F2937] p-6 rounded-lg">
@@ -227,7 +321,7 @@ export const CsvAnalysis: React.FC = () => {
           </div>
         </div>
 
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             CSV Data
           </label>
@@ -239,9 +333,9 @@ export const CsvAnalysis: React.FC = () => {
             className="w-full px-4 py-2 bg-[#283447] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white font-mono text-sm"
             placeholder="Paste your CSV data here or upload a file..."
           />
-        </div>
+        </div> */}
 
-        <div>
+        {/* <div>
           <input
             type="file"
             accept=".csv,text/csv"
@@ -253,7 +347,7 @@ export const CsvAnalysis: React.FC = () => {
             }}
             className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700"
           />
-        </div>
+        </div> */}
 
         <button
           type="submit"
@@ -273,13 +367,15 @@ export const CsvAnalysis: React.FC = () => {
       {result != null && (
         <div className="mt-6">
           <h3 className="text-lg font-bold text-white mb-3">Analysis Results</h3>
-          <div className="bg-[#0b1220] p-4 rounded-lg overflow-auto max-h-96">
-            <pre className="text-blue-200 text-sm whitespace-pre-wrap">{pretty}</pre>
+          <div className="bg-[#0b1220] p-4 rounded-lg">
+            <div className="space-y-2">
+              {renderFriendly((result as any)?.answer ?? result)}
+            </div>
           </div>
         </div>
       )}
 
-      <details className="mt-6">
+      {/* <details className="mt-6">
         <summary className="text-gray-400 cursor-pointer hover:text-white">
           How CSV-only analysis works
         </summary>
@@ -289,7 +385,7 @@ export const CsvAnalysis: React.FC = () => {
           <p>• Results include citations showing which rows were used for each answer</p>
           <p>• If data is insufficient, the system returns "NOT_FOUND"</p>
         </div>
-      </details>
+      </details> */}
     </div>
   );
 };
