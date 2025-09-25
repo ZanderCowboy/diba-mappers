@@ -1,10 +1,17 @@
 import React from 'react';
 import { DashboardIcon, DepartmentsIcon, ProjectsIcon, VendorsIcon, InsightsIcon, UserIcon } from './icons/DashboardIcons';
 
-const NavItem = ({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) => (
-  <a
-    href="#"
-    className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+interface NavItemProps {
+  icon: React.ReactNode;
+  label: string;
+  active?: boolean;
+  onClick: () => void;
+}
+
+const NavItem: React.FC<NavItemProps> = ({ icon, label, active = false, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`w-full flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors text-left ${
       active
         ? 'bg-blue-600 text-white'
         : 'text-gray-300 hover:bg-gray-700 hover:text-white'
@@ -12,21 +19,38 @@ const NavItem = ({ icon, label, active = false }: { icon: React.ReactNode, label
   >
     {icon}
     <span className="ml-3">{label}</span>
-  </a>
+  </button>
 );
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  activePage: string;
+  setActivePage: (page: string) => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
+  const navItems = [
+    { id: 'Dashboard', icon: <DashboardIcon />, label: 'Dashboard' },
+    { id: 'Departments', icon: <DepartmentsIcon />, label: 'Departments' },
+    { id: 'Projects', icon: <ProjectsIcon />, label: 'Projects' },
+    { id: 'Vendors', icon: <VendorsIcon />, label: 'Vendors' },
+    { id: 'Insights', icon: <InsightsIcon />, label: 'Insights' },
+  ];
+
   return (
     <aside className="w-64 bg-[#111827] flex flex-col p-4">
       <div className="px-4 mb-8">
         <h1 className="text-2xl font-bold text-white">DibasMap</h1>
       </div>
       <nav className="flex-1 space-y-2">
-        <NavItem icon={<DashboardIcon />} label="Dashboard" active />
-        <NavItem icon={<DepartmentsIcon />} label="Departments" />
-        <NavItem icon={<ProjectsIcon />} label="Projects" />
-        <NavItem icon={<VendorsIcon />} label="Vendors" />
-        <NavItem icon={<InsightsIcon />} label="Insights" />
+        {navItems.map(item => (
+          <NavItem 
+            key={item.id}
+            icon={item.icon} 
+            label={item.label} 
+            active={activePage === item.id}
+            onClick={() => setActivePage(item.id)}
+          />
+        ))}
       </nav>
       <div className="mt-auto">
         <div className="flex items-center p-2">
