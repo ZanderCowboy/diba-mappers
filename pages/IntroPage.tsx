@@ -1,6 +1,5 @@
 import React from 'react';
 import { TreasuryIcon, DepartmentVendorIcon, ProjectsAssetsIcon, ScrollDownIcon } from '../components/icons/IntroIcons';
-import backgroundImage from '../image.png';
 
 interface IntroPageProps {
   onEnter: () => void;
@@ -8,7 +7,7 @@ interface IntroPageProps {
 
 export const IntroPage: React.FC<IntroPageProps> = ({ onEnter }) => {
   return (
-    <div className="h-screen overflow-y-scroll snap-y snap-mandatory font-sans" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+    <div className="h-screen overflow-y-scroll snap-y snap-mandatory font-sans bg-gradient-to-br from-gray-900 via-blue-900 to-gray-800">
       {/* Welcome Section */}
       <section className="h-screen w-full flex flex-col items-center justify-center snap-start bg-black/50 text-center p-4 relative">
         <h1 className="text-5xl md:text-7xl font-bold text-white mb-4" style={{ fontFamily: "'Helvetica Neue', 'Arial', sans-serif" }}>

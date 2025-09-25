@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { InsightCard } from '../components/InsightCard';
 import { GoogleGenAI, Type } from "@google/genai";
 import { BudgetChart } from '../components/BudgetChart';
+import { CsvAnalysis } from '../components/CsvAnalysis';
 
 // FIX: Define placeholder icons locally to satisfy dependencies for InsightCard
 // without creating new files or assuming content of unprovided icon files.
@@ -193,6 +194,10 @@ export const InsightsPage: React.FC = () => {
                     ))}
                 </div>
             )}
+            
+            <section className="mt-8">
+                <CsvAnalysis />
+            </section>
         </div>
     );
 };
