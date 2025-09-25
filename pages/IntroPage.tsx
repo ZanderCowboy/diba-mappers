@@ -9,7 +9,7 @@ export const IntroPage: React.FC<IntroPageProps> = ({ onEnter }) => {
   return (
     <div className="h-screen overflow-y-scroll snap-y snap-mandatory font-sans bg-gradient-to-br from-gray-900 via-blue-900 to-gray-800">
       {/* Welcome Section */}
-      <section className="h-screen w-full flex flex-col items-center justify-center snap-start bg-black/50 text-center p-4 relative">
+      <section className="h-screen w-full flex flex-col items-center justify-center snap-start bg-gradient-to-br from-[#111827] to-[#1F2937] text-center p-4 relative">
         <h1 className="text-5xl md:text-7xl font-bold text-white mb-4" style={{ fontFamily: "'Helvetica Neue', 'Arial', sans-serif" }}>
             Welcome
         </h1>
@@ -22,7 +22,7 @@ export const IntroPage: React.FC<IntroPageProps> = ({ onEnter }) => {
       </section>
 
       {/* Concept Section */}
-      <section className="h-screen w-full flex flex-col items-center justify-center snap-start bg-black/60 p-8">
+      <section className="h-screen w-full flex flex-col items-center justify-center snap-start bg-[#111827] p-8">
         <div className="text-center max-w-5xl w-full">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Our Mission: Transparency & Trust</h2>
           <p className="text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
