@@ -23,11 +23,11 @@ export const mockProjects: Project[] = [
 
 // Vendors (common supplier types)
 export const mockVendors: Vendor[] = [
-  { id: 'v1', name: 'Aveng Grinaker-LTA', service: 'Construction', contractValue: 3500000000, startDate: '2023-02-01', endDate: '2026-02-01' },
-  { id: 'v2', name: 'Netcare Holdings', service: 'Healthcare Services', contractValue: 500000000, startDate: '2022-08-01', endDate: '2024-08-01' },
-  { id: 'v3', name: 'Multichoice SA', service: 'Digital & Communication', contractValue: 120000000, startDate: '2023-05-01', endDate: '2025-05-01' },
-  { id: 'v4', name: 'WBHO Construction', service: 'Infrastructure', contractValue: 2200000000, startDate: '2021-09-01', endDate: '2025-09-01' },
-  { id: 'v5', name: 'Eskom Rotek Industries', service: 'Energy Services', contractValue: 750000000, startDate: '2023-01-01', endDate: '2024-12-31' },
+  { id: 'v1', name: 'Aveng Grinaker-LTA', service: 'Construction', contractValue: 3500000000, startDate: '2023-02-01', endDate: '2026-02-01' , department: 'Technology Services'},
+  { id: 'v2', name: 'Netcare Holdings', service: 'Healthcare Services', contractValue: 500000000, startDate: '2022-08-01', endDate: '2024-08-01' , department: 'Public Works'},
+  { id: 'v3', name: 'Multichoice SA', service: 'Digital & Communication', contractValue: 120000000, startDate: '2023-05-01', endDate: '2025-05-01' , department: 'Parks & Recreation'},
+  { id: 'v4', name: 'WBHO Construction', service: 'Infrastructure', contractValue: 2200000000, startDate: '2021-09-01', endDate: '2025-09-01' , department: 'Public Works'},
+  { id: 'v5', name: 'Eskom Rotek Industries', service: 'Energy Services', contractValue: 750000000, startDate: '2023-01-01', endDate: '2024-12-31' , department: 'Technology Services'},
 ];
 
 // Government revenue streams (big buckets)
@@ -35,8 +35,8 @@ export const mockRevenue: Revenue[] = [
   { id: 'r1', source: 'Personal Income Tax', amount: 601000000000, date: '2023-12-31' },
   { id: 'r2', source: 'Value-Added Tax (VAT)', amount: 470000000000, date: '2023-12-31' },
   { id: 'r3', source: 'Corporate Income Tax', amount: 370000000000, date: '2023-12-31' },
-  { id: 'r4', source: 'Fuel Levies', amount: 85000000000, date: '2023-12-31' },
-  { id: 'r5', source: 'Customs Duties', amount: 65000000000, date: '2023-12-31' },
+  { id: 'r4', source: 'Fuel Levies', amount: 85000000000, date: '2023-12-31' , department: 'Finance'},
+  { id: 'r5', source: 'Customs Duties', amount: 65000000000, date: '2023-12-31', department: 'Public Works' },
   { id: 'r6', source: 'Toll Fees (SANRAL)', amount: 18000000000, date: '2023-12-31' },
 ];
 

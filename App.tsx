@@ -11,6 +11,7 @@ import { InsightsPage } from './pages/InsightsPage';
 import { IntroPage } from './pages/IntroPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { Notification } from './components/Notification';
+import { Department } from './types';
 
 export type Page = 'dashboard' | 'departments' | 'projects' | 'vendors' | 'revenue' | 'insights';
 
@@ -18,6 +19,7 @@ function App() {
   const [showIntro, setShowIntro] = useState(true);
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
   const [notification, setNotification] = useState<string | null>(null);
+  const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
 
   const triggerNotification = useCallback((message: string) => {
     setNotification(message);
@@ -27,6 +29,13 @@ function App() {
   const handleEnterDashboard = () => {
     setShowIntro(false);
   }
+  
+  const handleSelectDepartment = (department: Department | null) => {
+    setSelectedDepartment(department);
+    if (department) {
+      setCurrentPage('departments');
+    }
+  };
 
   if (showIntro) {
     return <IntroPage onEnter={handleEnterDashboard} />;
@@ -37,11 +46,11 @@ function App() {
       case 'dashboard':
         return <DashboardPage setCurrentPage={setCurrentPage} />;
       case 'departments':
-        return <DepartmentsPage />;
+        return <DepartmentsPage selectedDepartment={selectedDepartment} />;
       case 'projects':
-        return <ProjectsPage />;
+        return <ProjectsPage selectedDepartment={selectedDepartment} onClearFilter={() => setSelectedDepartment(null)} />;
       case 'vendors':
-        return <VendorsPage />;
+        return <VendorsPage selectedDepartment={selectedDepartment} onClearFilter={() => setSelectedDepartment(null)} />;
       case 'revenue':
         return <RevenuePage />;
       case 'insights':
@@ -53,7 +62,13 @@ function App() {
 
   return (
     <div className="flex h-screen bg-[#111827] text-gray-300 font-sans">
-      <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} triggerNotification={triggerNotification} />
+      <Sidebar 
+        currentPage={currentPage} 
+        setCurrentPage={setCurrentPage} 
+        triggerNotification={triggerNotification}
+        selectedDepartment={selectedDepartment}
+        onSelectDepartment={handleSelectDepartment}
+      />
       <main className="flex-1 p-8 overflow-y-auto">
         {renderPage()}
       </main>
