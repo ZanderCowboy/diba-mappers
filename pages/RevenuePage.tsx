@@ -1,21 +1,23 @@
+// FIX: Replaced placeholder content with a functional RevenuePage component.
+// This page provides a structure for displaying revenue data.
 import React, { useState } from 'react';
-import { VendorTable } from '../components/VendorTable';
+import { RevenueTable } from '../components/RevenueTable';
 
-export const VendorsPage: React.FC = () => {
+export const RevenuePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   return (
     <div>
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Vendors</h1>
-        <p className="text-gray-400">A list of registered city vendors.</p>
+        <h1 className="text-3xl font-bold text-white">Revenue</h1>
+        <p className="text-gray-400">An overview of the city's revenue sources.</p>
       </header>
 
       <div className="flex justify-end items-center mb-6">
         <div className="relative">
           <input 
             type="text" 
-            placeholder="Search vendors..."
+            placeholder="Search revenue sources..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="bg-[#1F2937] border border-gray-600 rounded-lg py-2 px-4 pl-10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -28,7 +30,7 @@ export const VendorsPage: React.FC = () => {
         </div>
       </div>
 
-      <VendorTable searchTerm={searchTerm} />
+      <RevenueTable searchTerm={searchTerm} />
     </div>
   );
 };

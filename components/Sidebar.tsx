@@ -1,67 +1,67 @@
+// FIX: Replaced placeholder content with a functional Sidebar component.
+// This provides the main navigation for the application.
 import React from 'react';
-import { DashboardIcon, DepartmentsIcon, ProjectsIcon, VendorsIcon, InsightsIcon, UserIcon } from './icons/DashboardIcons';
+import { Page } from '../App';
+import { DashboardIcon, DepartmentsIcon, ProjectsIcon, VendorsIcon, RevenueIcon, InsightsIcon, GovLogo } from './icons/DashboardIcons';
+
+interface SidebarProps {
+  currentPage: Page;
+  setCurrentPage: (page: Page) => void;
+  triggerNotification: (message: string) => void;
+}
 
 interface NavItemProps {
   icon: React.ReactNode;
   label: string;
-  active?: boolean;
-  onClick: () => void;
+  page: Page;
+  currentPage: Page;
+  setCurrentPage: (page: Page) => void;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ icon, label, active = false, onClick }) => (
-  <button
-    onClick={onClick}
-    className={`w-full flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors text-left ${
-      active
-        ? 'bg-blue-600 text-white'
-        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-    }`}
-  >
-    {icon}
-    <span className="ml-3">{label}</span>
-  </button>
-);
-
-interface SidebarProps {
-  activePage: string;
-  setActivePage: (page: string) => void;
-}
-
-export const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
-  const navItems = [
-    { id: 'Dashboard', icon: <DashboardIcon />, label: 'Dashboard' },
-    { id: 'Departments', icon: <DepartmentsIcon />, label: 'Departments' },
-    { id: 'Projects', icon: <ProjectsIcon />, label: 'Projects' },
-    { id: 'Vendors', icon: <VendorsIcon />, label: 'Vendors' },
-    { id: 'Insights', icon: <InsightsIcon />, label: 'Insights' },
-  ];
-
+const NavItem: React.FC<NavItemProps> = ({ icon, label, page, currentPage, setCurrentPage }) => {
+  const isActive = currentPage === page;
   return (
-    <aside className="w-64 bg-[#111827] flex flex-col p-4">
-      <div className="px-4 mb-8">
-        <h1 className="text-2xl font-bold text-white">DibasMap</h1>
+    <li>
+      <button
+        onClick={() => setCurrentPage(page)}
+        className={`flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 ${
+          isActive
+            ? 'bg-blue-600 text-white'
+            : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+        }`}
+      >
+        <span className="mr-3">{icon}</span>
+        {label}
+      </button>
+    </li>
+  );
+};
+
+export const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage, triggerNotification }) => {
+  return (
+    <aside className="w-64 bg-[#1F2937] p-4 flex flex-col flex-shrink-0">
+      <div className="flex items-center gap-2 px-4 py-3 mb-6">
+        <GovLogo />
+        <span className="text-xl font-bold text-white">DibasMap Public</span>
       </div>
-      <nav className="flex-1 space-y-2">
-        {navItems.map(item => (
-          <NavItem 
-            key={item.id}
-            icon={item.icon} 
-            label={item.label} 
-            active={activePage === item.id}
-            onClick={() => setActivePage(item.id)}
-          />
-        ))}
+      <nav>
+        <ul className="space-y-2">
+          <NavItem icon={<DashboardIcon />} label="Dashboard" page="dashboard" currentPage={currentPage} setCurrentPage={setCurrentPage} />
+          <NavItem icon={<DepartmentsIcon />} label="Departments" page="departments" currentPage={currentPage} setCurrentPage={setCurrentPage} />
+          <NavItem icon={<ProjectsIcon />} label="Projects" page="projects" currentPage={currentPage} setCurrentPage={setCurrentPage} />
+          <NavItem icon={<VendorsIcon />} label="Vendors" page="vendors" currentPage={currentPage} setCurrentPage={setCurrentPage} />
+          <NavItem icon={<RevenueIcon />} label="Revenue" page="revenue" currentPage={currentPage} setCurrentPage={setCurrentPage} />
+          <NavItem icon={<InsightsIcon />} label="AI Insights" page="insights" currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        </ul>
       </nav>
-      <div className="mt-auto">
-        <div className="flex items-center p-2">
-          <div className="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center text-gray-800">
-            <UserIcon />
-          </div>
-          <div className="ml-3">
-            <p className="text-sm font-semibold text-white">Jane Doe</p>
-            <p className="text-xs text-gray-400">Citizen</p>
-          </div>
-        </div>
+      <div className="mt-auto p-4 bg-[#283447] rounded-lg text-center">
+        <h4 className="font-bold text-white text-sm">Need Help?</h4>
+        <p className="text-xs text-gray-400 mt-1 mb-3">Check our documentation or contact support.</p>
+        <button 
+            onClick={() => triggerNotification('This feature is not yet implemented.')}
+            className="w-full bg-gray-600 text-white text-xs font-semibold py-2 rounded-lg hover:bg-gray-500 transition-colors">
+            Read Docs
+        </button>
       </div>
     </aside>
   );

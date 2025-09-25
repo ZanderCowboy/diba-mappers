@@ -1,5 +1,4 @@
 import React from 'react';
-import { EditIcon, DeleteIcon } from './icons/ActionIcons';
 
 const departments = [
   { id: 'D001', name: 'Police Department', head: 'John Smith', employees: 350, budget: 'R50,000,000' },
@@ -10,7 +9,17 @@ const departments = [
   { id: 'D006', name: 'Technology Services', head: 'Sarah Black', employees: 120, budget: 'R22,000,000' },
 ];
 
-export const DepartmentTable: React.FC = () => {
+interface DepartmentTableProps {
+    searchTerm: string;
+}
+
+export const DepartmentTable: React.FC<DepartmentTableProps> = ({ searchTerm }) => {
+  const filteredDepartments = departments.filter(dept =>
+    dept.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    dept.head.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    dept.id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="bg-[#1F2937] rounded-lg overflow-hidden">
       <table className="w-full text-sm text-left text-gray-400">
@@ -21,23 +30,16 @@ export const DepartmentTable: React.FC = () => {
             <th scope="col" className="px-6 py-3">Department Head</th>
             <th scope="col" className="px-6 py-3">Employees</th>
             <th scope="col" className="px-6 py-3">Annual Budget</th>
-            <th scope="col" className="px-6 py-3 text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {departments.map((dept) => (
+          {filteredDepartments.map((dept) => (
             <tr key={dept.id} className="border-b border-gray-700 hover:bg-gray-700/50">
               <th scope="row" className="px-6 py-4 font-medium text-white whitespace-nowrap">{dept.id}</th>
               <td className="px-6 py-4 text-white">{dept.name}</td>
               <td className="px-6 py-4">{dept.head}</td>
               <td className="px-6 py-4">{dept.employees}</td>
               <td className="px-6 py-4">{dept.budget}</td>
-              <td className="px-6 py-4 text-right">
-                <div className="flex items-center justify-end gap-4">
-                    <button className="text-blue-400 hover:text-blue-300"><EditIcon /></button>
-                    <button className="text-red-400 hover:text-red-300"><DeleteIcon /></button>
-                </div>
-              </td>
             </tr>
           ))}
         </tbody>

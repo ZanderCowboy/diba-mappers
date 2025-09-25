@@ -1,6 +1,5 @@
 import React from 'react';
 import { StatusBadge } from './StatusBadge';
-import { EditIcon, DeleteIcon } from './icons/ActionIcons';
 
 type ProjectStatus = 'Completed' | 'In Progress' | 'Pending' | 'Cancelled';
 
@@ -19,7 +18,16 @@ const projects: {
   { id: 'P005', name: 'Water Treatment Plant Upgrade', department: 'Public Works', budget: 'R8,000,000', status: 'Cancelled', completion: '20%' },
 ];
 
-export const ProjectTable: React.FC = () => {
+interface ProjectTableProps {
+    searchTerm: string;
+}
+
+export const ProjectTable: React.FC<ProjectTableProps> = ({ searchTerm }) => {
+  const filteredProjects = projects.filter(project =>
+    project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    project.department.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="bg-[#1F2937] rounded-lg overflow-hidden">
       <table className="w-full text-sm text-left text-gray-400">
@@ -31,11 +39,10 @@ export const ProjectTable: React.FC = () => {
             <th scope="col" className="px-6 py-3">Budget</th>
             <th scope="col" className="px-6 py-3">Status</th>
             <th scope="col" className="px-6 py-3">Completion</th>
-            <th scope="col" className="px-6 py-3 text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {projects.map((project) => (
+          {filteredProjects.map((project) => (
             <tr key={project.id} className="border-b border-gray-700 hover:bg-gray-700/50">
               <th scope="row" className="px-6 py-4 font-medium text-white whitespace-nowrap">{project.id}</th>
               <td className="px-6 py-4 text-white">{project.name}</td>
@@ -48,12 +55,6 @@ export const ProjectTable: React.FC = () => {
                         <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: project.completion }}></div>
                     </div>
                     <span className="text-xs text-gray-300">{project.completion}</span>
-                </div>
-              </td>
-              <td className="px-6 py-4 text-right">
-                <div className="flex items-center justify-end gap-4">
-                    <button className="text-blue-400 hover:text-blue-300"><EditIcon /></button>
-                    <button className="text-red-400 hover:text-red-300"><DeleteIcon /></button>
                 </div>
               </td>
             </tr>

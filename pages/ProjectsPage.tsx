@@ -1,19 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ProjectTable } from '../components/ProjectTable';
 
 export const ProjectsPage: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+
   return (
     <div>
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-white">Projects</h1>
-        <p className="text-gray-400">Track and manage all ongoing and completed city projects.</p>
+        <p className="text-gray-400">Status of all ongoing and completed city projects.</p>
       </header>
 
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-end items-center mb-6">
         <div className="relative">
           <input 
             type="text" 
             placeholder="Search projects..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="bg-[#1F2937] border border-gray-600 rounded-lg py-2 px-4 pl-10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -22,15 +26,9 @@ export const ProjectsPage: React.FC = () => {
             </svg>
           </div>
         </div>
-        <button className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-          </svg>
-          Add Project
-        </button>
       </div>
 
-      <ProjectTable />
+      <ProjectTable searchTerm={searchTerm} />
     </div>
   );
 };

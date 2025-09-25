@@ -33,7 +33,6 @@ export const InsightCard: React.FC<InsightCardProps> = ({ type, icon, title, des
       <div>
         <h4 className="font-bold text-white text-sm mb-1">{title}</h4>
         <p className="text-xs text-gray-400 leading-relaxed">{description}</p>
-        <a href="#" className="text-xs text-blue-400 hover:underline mt-2 inline-block">View Details →</a>
       </div>
     </div>
   );
