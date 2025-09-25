@@ -1,44 +1,45 @@
+// FIX: Replaced placeholder content with a functional VendorTable component. This component renders vendor data in a table, resolving errors on the Vendors page.
 import React from 'react';
-
-const vendors = [
-  { id: 'V001', name: 'Citywide Office Supplies', contactPerson: 'Alice Johnson', email: 'alice@citywideoffice.com', phone: '011-555-0101' },
-  { id: 'V002', name: 'Infrastructure Solutions Inc.', contactPerson: 'Bob Williams', email: 'bob.w@infrasolutions.co.za', phone: '012-555-0102' },
-  { id: 'V003', name: 'GreenScape Landscaping', contactPerson: 'Charlie Brown', email: 'charlie@greenscape.com', phone: '021-555-0103' },
-  { id: 'V004', name: 'SecureTech IT Services', contactPerson: 'Diana Prince', email: 'diana.p@securetech.co.za', phone: '031-555-0104' },
-  { id: 'V005', name: 'SA Fleet Management', contactPerson: 'Ethan Hunt', email: 'ethan.hunt@safleet.co.za', phone: '041-555-0105' },
-];
+import { Vendor } from '../types';
 
 interface VendorTableProps {
-    searchTerm: string;
+  vendors: Vendor[];
+  searchTerm: string;
 }
 
-export const VendorTable: React.FC<VendorTableProps> = ({ searchTerm }) => {
-  const filteredVendors = vendors.filter(vendor =>
-    vendor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vendor.contactPerson.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vendor.email.toLowerCase().includes(searchTerm.toLowerCase())
+export const VendorTable: React.FC<VendorTableProps> = ({ vendors, searchTerm }) => {
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+  };
+
+  const filteredVendors = vendors.filter(
+    (vendor) =>
+      vendor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      vendor.service.toLowerCase().includes(searchTerm.toLowerCase())
   );
-    
+
+  if (filteredVendors.length === 0) {
+    return <div className="bg-[#1F2937] rounded-lg p-8 text-center text-gray-400">No vendors found matching your search.</div>;
+  }
+
   return (
     <div className="bg-[#1F2937] rounded-lg overflow-hidden">
-      <table className="w-full text-sm text-left text-gray-400">
-        <thead className="text-xs text-gray-300 uppercase bg-[#283447]">
+      <table className="min-w-full text-left text-sm text-gray-400">
+        <thead className="bg-[#283447] text-xs text-gray-300 uppercase tracking-wider">
           <tr>
-            <th scope="col" className="px-6 py-3">Vendor ID</th>
             <th scope="col" className="px-6 py-3">Vendor Name</th>
-            <th scope="col" className="px-6 py-3">Contact Person</th>
-            <th scope="col" className="px-6 py-3">Contact Email</th>
-            <th scope="col" className="px-6 py-3">Contact Phone</th>
+            <th scope="col" className="px-6 py-3">Service Provided</th>
+            <th scope="col" className="px-6 py-3">Contract Value</th>
+            <th scope="col" className="px-6 py-3">Contract End Date</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-gray-700">
           {filteredVendors.map((vendor) => (
-            <tr key={vendor.id} className="border-b border-gray-700 hover:bg-gray-700/50">
-              <th scope="row" className="px-6 py-4 font-medium text-white whitespace-nowrap">{vendor.id}</th>
-              <td className="px-6 py-4 text-white">{vendor.name}</td>
-              <td className="px-6 py-4">{vendor.contactPerson}</td>
-              <td className="px-6 py-4">{vendor.email}</td>
-              <td className="px-6 py-4">{vendor.phone}</td>
+            <tr key={vendor.id} className="hover:bg-[#283447]">
+              <td className="px-6 py-4 font-medium text-white">{vendor.name}</td>
+              <td className="px-6 py-4">{vendor.service}</td>
+              <td className="px-6 py-4">{formatCurrency(vendor.contractValue)}</td>
+              <td className="px-6 py-4">{vendor.endDate}</td>
             </tr>
           ))}
         </tbody>

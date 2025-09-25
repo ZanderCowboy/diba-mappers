@@ -1,45 +1,45 @@
+// FIX: Replaced placeholder content with a functional DepartmentTable component. This component renders department data in a table, resolving errors on the Departments page.
 import React from 'react';
-
-const departments = [
-  { id: 'D001', name: 'Police Department', head: 'John Smith', employees: 350, budget: 'R50,000,000' },
-  { id: 'D002', name: 'Fire Department', head: 'Jane Miller', employees: 275, budget: 'R42,000,000' },
-  { id: 'D003', name: 'Public Works', head: 'Robert Brown', employees: 410, budget: 'R65,000,000' },
-  { id: 'D004', name: 'Parks & Recreation', head: 'Emily White', employees: 150, budget: 'R15,000,000' },
-  { id: 'D005', name: 'Urban Planning', head: 'Michael Green', employees: 85, budget: 'R8,500,000' },
-  { id: 'D006', name: 'Technology Services', head: 'Sarah Black', employees: 120, budget: 'R22,000,000' },
-];
+import { Department } from '../types';
 
 interface DepartmentTableProps {
-    searchTerm: string;
+  departments: Department[];
+  searchTerm: string;
 }
 
-export const DepartmentTable: React.FC<DepartmentTableProps> = ({ searchTerm }) => {
-  const filteredDepartments = departments.filter(dept =>
-    dept.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    dept.head.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    dept.id.toLowerCase().includes(searchTerm.toLowerCase())
+export const DepartmentTable: React.FC<DepartmentTableProps> = ({ departments, searchTerm }) => {
+  const formatBudget = (budget: number) => {
+    return `R${(budget / 1000000).toFixed(1)}M`;
+  };
+
+  const filteredDepartments = departments.filter(
+    (dept) =>
+      dept.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      dept.director.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (filteredDepartments.length === 0) {
+    return <div className="bg-[#1F2937] rounded-lg p-8 text-center text-gray-400">No departments found matching your search.</div>;
+  }
 
   return (
     <div className="bg-[#1F2937] rounded-lg overflow-hidden">
-      <table className="w-full text-sm text-left text-gray-400">
-        <thead className="text-xs text-gray-300 uppercase bg-[#283447]">
+      <table className="min-w-full text-left text-sm text-gray-400">
+        <thead className="bg-[#283447] text-xs text-gray-300 uppercase tracking-wider">
           <tr>
-            <th scope="col" className="px-6 py-3">Dept. ID</th>
             <th scope="col" className="px-6 py-3">Department Name</th>
-            <th scope="col" className="px-6 py-3">Department Head</th>
+            <th scope="col" className="px-6 py-3">Director</th>
             <th scope="col" className="px-6 py-3">Employees</th>
             <th scope="col" className="px-6 py-3">Annual Budget</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-gray-700">
           {filteredDepartments.map((dept) => (
-            <tr key={dept.id} className="border-b border-gray-700 hover:bg-gray-700/50">
-              <th scope="row" className="px-6 py-4 font-medium text-white whitespace-nowrap">{dept.id}</th>
-              <td className="px-6 py-4 text-white">{dept.name}</td>
-              <td className="px-6 py-4">{dept.head}</td>
+            <tr key={dept.id} className="hover:bg-[#283447]">
+              <td className="px-6 py-4 font-medium text-white">{dept.name}</td>
+              <td className="px-6 py-4">{dept.director}</td>
               <td className="px-6 py-4">{dept.employees}</td>
-              <td className="px-6 py-4">{dept.budget}</td>
+              <td className="px-6 py-4">{formatBudget(dept.budget)}</td>
             </tr>
           ))}
         </tbody>

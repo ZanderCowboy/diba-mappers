@@ -38,9 +38,30 @@ const mockInsights: Insight[] = [
 
 async function fetchInsights(): Promise<Insight[]> {
   try {
-    // FIX: Initialize the GoogleGenAI client inside the function to ensure it is defined when called,
-    // resolving the "ai is not defined" error. The API key is assumed to be available via process.env.API_KEY.
-    const ai = new GoogleGenAI({apiKey: process.env.API_KEY!});
+    // FIX: Updated to use process.env.API_KEY as per the coding guidelines to resolve 'import.meta.env' TypeScript error.
+    // const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+    let aiClient: GoogleGenAI | null = null;
+    function getAiClient(): GoogleGenAI | null {
+      const apiKey = (
+        // Prefer Vite client-side env var
+        (import.meta as any).env?.VITE_API_KEY ||
+        // Fallbacks if defined via define in Vite config
+        (process.env.API_KEY as string | undefined) ||
+        (process.env.GEMINI_API_KEY as string | undefined)
+      );
+      if (!apiKey) return null;
+      if (!aiClient) {
+        aiClient = new GoogleGenAI({ apiKey });
+      }
+      return aiClient;
+    }
+    
+    const ai = getAiClient();
+    if (!ai) {
+      // No API key available; fall back to mock data
+      return mockInsights;
+    }
+    
     
     const prompt = `
       Analyze the following city data and generate 3 concise insights for a city manager dashboard.

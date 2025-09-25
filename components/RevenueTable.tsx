@@ -1,58 +1,53 @@
-// FIX: Replaced placeholder content with a functional RevenueTable component.
-// This component displays mock revenue data in a table format.
+// FIX: Replaced placeholder content with a functional RevenueTable component. This component renders revenue data in a table and calculates total revenue, resolving errors on the Revenue page.
 import React from 'react';
-
-const revenue = [
-  { id: 'R001', source: 'Property Taxes', amount: 'R120,500,000', date: '2024-07-15', status: 'Collected' },
-  { id: 'R002', source: 'Business Licenses', amount: 'R15,200,000', date: '2024-06-30', status: 'Collected' },
-  { id: 'R003', source: 'Parking Fines', amount: 'R3,800,000', date: '2024-07-20', status: 'Partially Collected' },
-  { id: 'R004', source: 'Federal Grants', amount: 'R35,000,000', date: '2024-08-01', status: 'Pending' },
-  { id: 'R005', source: 'Event Permits', amount: 'R1,100,000', date: '2024-07-18', status: 'Collected' },
-];
-
-const StatusPill: React.FC<{status: string}> = ({ status }) => {
-    const statusClasses: Record<string, string> = {
-        Collected: 'bg-green-500/20 text-green-400',
-        'Partially Collected': 'bg-yellow-500/20 text-yellow-400',
-        Pending: 'bg-blue-500/20 text-blue-400',
-    };
-
-    return <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${statusClasses[status] || 'bg-gray-500/20 text-gray-400'}`}>{status}</span>
-}
+import { Revenue } from '../types';
 
 interface RevenueTableProps {
-    searchTerm: string;
+  revenueData: Revenue[];
+  searchTerm: string;
 }
 
-export const RevenueTable: React.FC<RevenueTableProps> = ({ searchTerm }) => {
-  const filteredRevenue = revenue.filter(item =>
-    item.source.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.id.toLowerCase().includes(searchTerm.toLowerCase())
+export const RevenueTable: React.FC<RevenueTableProps> = ({ revenueData, searchTerm }) => {
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(amount);
+  };
+  
+  const filteredData = revenueData.filter(
+    (item) =>
+      item.source.toLowerCase().includes(searchTerm.toLowerCase())
   );
-    
+
+  const totalRevenue = filteredData.reduce((acc, item) => acc + item.amount, 0);
+  
+  if (filteredData.length === 0) {
+    return <div className="bg-[#1F2937] rounded-lg p-8 text-center text-gray-400">No revenue sources found matching your search.</div>;
+  }
+
   return (
     <div className="bg-[#1F2937] rounded-lg overflow-hidden">
-      <table className="w-full text-sm text-left text-gray-400">
-        <thead className="text-xs text-gray-300 uppercase bg-[#283447]">
+      <table className="min-w-full text-left text-sm text-gray-400">
+        <thead className="bg-[#283447] text-xs text-gray-300 uppercase tracking-wider">
           <tr>
-            <th scope="col" className="px-6 py-3">Transaction ID</th>
             <th scope="col" className="px-6 py-3">Revenue Source</th>
-            <th scope="col" className="px-6 py-3">Amount</th>
-            <th scope="col" className="px-6 py-3">Date</th>
-            <th scope="col" className="px-6 py-3">Status</th>
+            <th scope="col" className="px-6 py-3">Date Recorded</th>
+            <th scope="col" className="px-6 py-3 text-right">Amount</th>
           </tr>
         </thead>
-        <tbody>
-          {filteredRevenue.map((item) => (
-            <tr key={item.id} className="border-b border-gray-700 hover:bg-gray-700/50">
-              <th scope="row" className="px-6 py-4 font-medium text-white whitespace-nowrap">{item.id}</th>
-              <td className="px-6 py-4 text-white">{item.source}</td>
-              <td className="px-6 py-4">{item.amount}</td>
+        <tbody className="divide-y divide-gray-700">
+          {filteredData.map((item) => (
+            <tr key={item.id} className="hover:bg-[#283447]">
+              <td className="px-6 py-4 font-medium text-white">{item.source}</td>
               <td className="px-6 py-4">{item.date}</td>
-              <td className="px-6 py-4"><StatusPill status={item.status} /></td>
+              <td className="px-6 py-4 text-right">{formatCurrency(item.amount)}</td>
             </tr>
           ))}
         </tbody>
+        <tfoot className="bg-[#283447]">
+            <tr>
+                <td colSpan={2} className="px-6 py-3 text-right font-bold text-white uppercase">Total Revenue</td>
+                <td className="px-6 py-3 text-right font-bold text-white">{formatCurrency(totalRevenue)}</td>
+            </tr>
+        </tfoot>
       </table>
     </div>
   );

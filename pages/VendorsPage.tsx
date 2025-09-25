@@ -1,34 +1,51 @@
-import React, { useState } from 'react';
+// FIX: Replaced placeholder content with a functional VendorsPage component. It now fetches and displays vendor data, resolving the "not a module" error in App.tsx.
+import React, { useState, useEffect } from 'react';
 import { VendorTable } from '../components/VendorTable';
+import { Vendor } from '../types';
+import api from '../api/mockApi';
 
 export const VendorsPage: React.FC = () => {
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    const fetchVendors = async () => {
+      try {
+        const data = await api.getVendors();
+        setVendors(data);
+      } catch (error) {
+        console.error("Failed to fetch vendors", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchVendors();
+  }, []);
 
   return (
     <div>
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-white">Vendors</h1>
-        <p className="text-gray-400">A list of registered city vendors.</p>
+        <p className="text-gray-400">A list of contractors and vendors working with the city.</p>
       </header>
-
-      <div className="flex justify-end items-center mb-6">
-        <div className="relative">
-          <input 
-            type="text" 
-            placeholder="Search vendors..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-[#1F2937] border border-gray-600 rounded-lg py-2 px-4 pl-10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-            </svg>
+      
+      {loading ? (
+        <div className="text-center py-8">Loading vendors...</div>
+      ) : (
+        <>
+          <div className="mb-4">
+            <input
+                type="text"
+                placeholder="Search by vendor name or service..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full max-w-md px-4 py-2 bg-[#283447] border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
-        </div>
-      </div>
-
-      <VendorTable searchTerm={searchTerm} />
+          <VendorTable vendors={vendors} searchTerm={searchTerm} />
+        </>
+      )}
     </div>
   );
 };
